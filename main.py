@@ -25,25 +25,22 @@ def histogram_equalization(img: Image.Image) -> Image.Image:
     result = np.zeros_like(arr)
     total_pixels = arr.shape[0] * arr.shape[1]
 
-    for ch in range(3):  # R, G, B
+    for ch in range(3):
         channel = arr[:, :, ch]
 
         hist = compute_histogram(channel)
         cdf = compute_cdf(hist)
 
-        # cdf_min — pirmā nenulles vērtība
         cdf_min = 0
         for val in cdf:
             if val > 0:
                 cdf_min = val
                 break
 
-        # LUT — lookup table katrai pikseļa vērtībai
         lut = [0] * 256
         for i in range(256):
             lut[i] = round((cdf[i] - cdf_min) / (total_pixels - cdf_min) * 255)
 
-        # Piemēro LUT katram pikselim
         for y in range(arr.shape[0]):
             for x in range(arr.shape[1]):
                 result[y, x, ch] = lut[channel[y, x]]
